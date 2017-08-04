@@ -20,6 +20,7 @@ class boot extends Phaser.State {
             fill: 'white'
         },
             bootText = this.game.add.text(0, 0, 'preload font', bootFont);
+        bootText.destroy();
     }
 
     preload () {
