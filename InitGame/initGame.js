@@ -45,7 +45,7 @@ class initGame extends Phaser.Game{
         this.plugins.plugins[0].changeState(nextLevel, bool);
     }
 
-    static development = !1; // 是否上线
+    static development = !0; // 是否为开发版本
 
     static isDesktop = !1;
 

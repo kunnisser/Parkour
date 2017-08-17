@@ -14,7 +14,8 @@ class configCreator {
             width: w,
             height: h,
             renderer: Phaser.AUTO,
-            antialias: !1
+            antialias: !0,
+            enableDebug: !0
         };
     };
 }

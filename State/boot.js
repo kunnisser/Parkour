@@ -16,7 +16,6 @@ class boot extends Phaser.State {
     init () {
         // 设置设备信息
         initGame.isDesktop = this.game.device.desktop;
-        this.gamescale = this.game.scale;
         let bootFont = {
             font: '20px GrilledCheeseBTNToasted',
             fill: 'white'
@@ -32,8 +31,10 @@ class boot extends Phaser.State {
     create () {
         this.detectWeakDevice();
         this.setupScale();
+        this.input.maxPointers = 1;
         this.game.add.plugin(new stateTransition(this.game));
         this.game.add.plugin(new monobg(this.game));
+        this.game.renderer.clearBeforeRender = !1;
         this.state.start('preloader', !0, !1);
     }
 
@@ -49,23 +50,53 @@ class boot extends Phaser.State {
     setupScale () {
        initGame.isDesktop ?
            this.scaleForDesktop() :
-           (this.scaleForMobile(),
+           (this.scaleForMobile(), this.dprScale(),
                this.isLandscape() && this.onEnterLandscape());
     }
 
     scaleForDesktop () {
-        this.gamescale.scaleMode = Phaser.ScaleManager.SHOW_ALL; // 保持比例缩放
-        this.gamescale.aspectRatio = config.GAME_WIDTH / config.GAME_HEIGHT; // 设置对应的宽高比
+        let gamescale = this.game.scale;
+        gamescale.scaleMode = Phaser.ScaleManager.SHOW_ALL; // 保持比例缩放
+        gamescale.aspectRatio = config.GAME_WIDTH / config.GAME_HEIGHT; // 设置对应的宽高比
         // canvas居中
-        this.gamescale.pageAlignHorizontally = !0;
-        this.gamescale.pageAlignVertically = !0;
+        gamescale.pageAlignHorizontally = !0;
+        gamescale.pageAlignVertically = !0;
     }
 
     scaleForMobile () {
-        this.gamescale.scaleMode = Phaser.ScaleManager.EXACT_FIT;
-        this.gamescale.forceOrientation(!1, !0); // 默认竖屏
+        let gamescale = this.game.scale;
+        gamescale.scaleMode = Phaser.ScaleManager.EXACT_FIT;
+        gamescale.forceOrientation(!1, !0); // 默认竖屏
         // 添加屏幕尺寸变化的callback
-        this.gamescale.onSizeChange.add(this.onChangeSize, this);
+        gamescale.onSizeChange.add(this.onSizeChange, this);
+    }
+
+    onSizeChange () {
+        this.isPortrait() ? (
+            this.dprScale(),
+            this.onEnterPortrait()
+        ) : this.onEnterLandscape();
+    }
+
+    dprScale () {
+        let ClientWidth = window.innerWidth,
+            ClientHeight = window.innerHeight,
+            dprWidth = this.game.device.pixelRatio * ClientWidth,
+            canvasWidth = 0,
+            canvasHeight = 0;
+        dprWidth <= config.SOURCE_GAME_WIDTH ? (canvasWidth = ClientWidth * 2,
+            canvasHeight = ClientHeight * 2) : (canvasWidth = ClientWidth, canvasHeight = ClientHeight);
+        let sourceWidth = config.SOURCE_GAME_WIDTH,
+            scaling = canvasWidth / sourceWidth;
+        this.scale.setGameSize(canvasWidth, canvasHeight); // 改变canvas的尺寸
+        config.WORLD_SCALE = scaling;
+        config.GAME_WIDTH = this.game.canvas.width / scaling; // 缩放游戏画布的尺寸
+        config.GAME_HEIGHT = this.game.canvas.height / scaling;
+        config.HALF_GAME_WIDTH = config.GAME_WIDTH * .5;
+        config.HALF_GAME_HEIGHT = config.GAME_HEIGHT * .5;
+        this.game.world.setBounds(0, 0, config.GAME_WIDTH, config.GAME_HEIGHT); // 不设置bounds范围会导致刷新位置错位
+        this.game.world.scale.set(scaling);
+        this.game.state.resize(config.GAME_WIDTH, config.GAME_HEIGHT);
     }
 
     isLandscape () {

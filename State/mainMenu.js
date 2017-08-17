@@ -30,7 +30,7 @@ class mainMenu extends Phaser.State {
 
     // 添加背景
     addGameMenu () {
-        this.mainSpritebatch = this.add.spriteBatch(this.world, 'gameworld');
+        this.mainSpritebatch = this.world;
         this.gameBg = this.game.add.image(0, 0, 'backgrounds_1', 'BG_60000', this.mainSpritebatch);
         this.bgItem = this.game.add.image(0, 0, 'backgrounds_1', '_Items0000', this.mainSpritebatch);
         this.bgItem.anchor.set(.5);

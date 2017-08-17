@@ -59,8 +59,8 @@ class preloader extends Phaser.State {
         this.outerPreloaderSprite.position.set(config.HALF_GAME_WIDTH, config.HALF_GAME_HEIGHT);
         this.outerPreloaderSprite.anchor.set(.5);
         this.innerPreloaderSprite = this.game.add.image(0, 0, 'preloader', 'Preloader_Front0000');
-        this.innerPreloaderSprite.position.set(config.HALF_GAME_WIDTH - 2, config.HALF_GAME_HEIGHT - 2);
-        this.innerPreloaderSprite.anchor.set(.5);
+        this.innerPreloaderSprite.position.set(config.HALF_GAME_WIDTH - this.innerPreloaderSprite.width * .5 - 2,
+            config.HALF_GAME_HEIGHT - this.innerPreloaderSprite.height * .5);
     }
 
     addLoadingInfo () {
