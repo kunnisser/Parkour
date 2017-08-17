@@ -1,5 +1,7 @@
 import Game from './InitGame/initGame';
 
-window.onload = function (){
-    var game = new Game();
+let init = () => {
+    new Game();
 }
+
+window.onload = init.call(this);

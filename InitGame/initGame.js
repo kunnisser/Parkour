@@ -6,6 +6,8 @@
 import configCreate from '../GameConfiger/configCreator';
 import boot from '../State/boot';
 import preloader from '../State/preloader';
+import mainMenu from '../State/mainMenu';
+import linkDots from "../State/linkDots";
 
 class initGame extends Phaser.Game{
     constructor () {
@@ -14,7 +16,9 @@ class initGame extends Phaser.Game{
         // 符合条件进入boot状态
         this.isAllowDomain() && this.checkIframe() && (
             this.state.add('boot', boot, !0),
-                this.state.add('preloader', preloader, !1)
+                this.state.add('preloader', preloader, !1),
+                this.state.add('mainMenu', mainMenu, !1),
+                this.state.add('linkDots', linkDots, !1)
         );
     };
 
@@ -37,11 +41,17 @@ class initGame extends Phaser.Game{
         }
     }
 
-    static development = !0;
+    changeState (nextLevel, bool) {
+        this.plugins.plugins[0].changeState(nextLevel, bool);
+    }
+
+    static development = !1; // 是否上线
 
     static isDesktop = !1;
 
     static isWeakDevice = !1;
+
+    static picturesConfig = {};
 }
 
 export default initGame;

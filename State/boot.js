@@ -4,7 +4,9 @@
  */
 
 import initGame from '../InitGame/initGame';
-import Config from '../GameConfiger/config';
+import config from '../GameConfiger/config';
+import stateTransition from '../Plugins/stateTransition';
+import monobg from '../Plugins/monobg';
 
 class boot extends Phaser.State {
     constructor () {
@@ -30,6 +32,8 @@ class boot extends Phaser.State {
     create () {
         this.detectWeakDevice();
         this.setupScale();
+        this.game.add.plugin(new stateTransition(this.game));
+        this.game.add.plugin(new monobg(this.game));
         this.state.start('preloader', !0, !1);
     }
 
@@ -51,7 +55,7 @@ class boot extends Phaser.State {
 
     scaleForDesktop () {
         this.gamescale.scaleMode = Phaser.ScaleManager.SHOW_ALL; // 保持比例缩放
-        this.gamescale.aspectRatio = Config.GAME_WIDTH / Config.GAME_HEIGHT; // 设置对应的宽高比
+        this.gamescale.aspectRatio = config.GAME_WIDTH / config.GAME_HEIGHT; // 设置对应的宽高比
         // canvas居中
         this.gamescale.pageAlignHorizontally = !0;
         this.gamescale.pageAlignVertically = !0;

@@ -1,4 +1,6 @@
 import config from '../GameConfiger/config';
+import initGame from '../InitGame/initGame';
+import picturesConfig from '../Util/picturesConfig';
 
 class preloader extends Phaser.State {
     constructor () {
@@ -7,6 +9,7 @@ class preloader extends Phaser.State {
 
     init () {
        this.addBackground();
+       this.addBgItem();
        this.addPreloadBar();
        this.addLoadingInfo();
        this.addCompanyInfo();
@@ -14,13 +17,19 @@ class preloader extends Phaser.State {
     }
 
     preload () {
+        this.loadGameConfigs();
         this.loadFontAssets();
         this.loadGraphics();
         this.load.setPreloadSprite(this.innerPreloaderSprite);
     }
 
     create () {
+        this.initPicturesConfig();
+        this.game.changeState('mainMenu', !0);
+    }
 
+    loadGameConfigs () {
+        this.load.json('pictures', '/Parkour/assets/jsonHash/pictures.json');
     }
 
     loadFontAssets () {
@@ -28,28 +37,30 @@ class preloader extends Phaser.State {
     }
 
     loadGraphics () {
-        this.load.image('figure', '/Parkour/assets/graphics/figure.png');
-        this.load.image('model', '/Parkour/assets/graphics/model.png');
-        this.load.image('tutorial', '/Parkour/assets/graphics/tutorial.png');
-        this.load.atlasJSONHash('main_menu', '/Parkour/assets/graphics/menu.png', "/Parkour/assets/jsonHash/menu.json");
-        this.load.atlasJSONHash('plateform', '/Parkour/assets/graphics/plateform.png', "/Parkour/assets/jsonHash/plateform.json");
-        this.load.atlasJSONHash('interface', '/Parkour/assets/graphics/interface.png', "/Parkour/assets/jsonHash/interface.json");
-        this.load.atlasJSONHash('jiongDog', '/Parkour/assets/graphics/jiongDog.png', "/Parkour/assets/jsonHash/jiongDog.json");
+        this.load.atlasJSONHash('backgrounds_1', '/Parkour/assets/graphics/backgrounds_1.png', "/Parkour/assets/jsonHash/backgrounds_1.json");
+        this.load.atlasJSONHash('common', '/Parkour/assets/graphics/common.png', "/Parkour/assets/jsonHash/common.json");
+        this.load.atlasJSONHash('pictures_1', '/Parkour/assets/graphics/pictures_1.png', "/Parkour/assets/jsonHash/pictures_1.json");
+        this.load.atlasJSONHash('pictures_2', '/Parkour/assets/graphics/pictures_2.png', "/Parkour/assets/jsonHash/pictures_2.json");
+        this.load.atlasJSONHash('link_the_dots', '/Parkour/assets/graphics/link_the_dots.png', "/Parkour/assets/jsonHash/link_the_dots.json");
     }
 
     addBackground () {
-       this.bg = this.game.add.image(0, 0, 'preloader', 'Preloader_Background0000');
+       this.bg = this.game.add.image(0, 0, 'preloader', 'BG0000');
+    }
+
+    addBgItem () {
+        this.item = this.game.add.image(0, 0, 'preloader', 'BG_Items0000');
+        this.item.anchor.set(.5);
+        this.item.scale.set(1.33);
     }
 
     addPreloadBar () {
-        this.outerPreloaderSprite = this.game.add.image(0, 0, 'preloader', 'Preloader_Outer0000');
+        this.outerPreloaderSprite = this.game.add.image(0, 0, 'preloader', 'Preloader_Back0000');
         this.outerPreloaderSprite.position.set(config.HALF_GAME_WIDTH, config.HALF_GAME_HEIGHT);
         this.outerPreloaderSprite.anchor.set(.5);
-        this.outerPreloaderSprite.angle = -90;
-        this.innerPreloaderSprite = this.game.add.image(0, 0, 'preloader', 'Preloader_Inner0000');
-        this.innerPreloaderSprite.angle = -90;
-        this.innerPreloaderSprite.position.set(config.HALF_GAME_WIDTH - this.innerPreloaderSprite.height * .5,
-            config.HALF_GAME_HEIGHT + this.innerPreloaderSprite.width * .5);
+        this.innerPreloaderSprite = this.game.add.image(0, 0, 'preloader', 'Preloader_Front0000');
+        this.innerPreloaderSprite.position.set(config.HALF_GAME_WIDTH - 2, config.HALF_GAME_HEIGHT - 2);
+        this.innerPreloaderSprite.anchor.set(.5);
     }
 
     addLoadingInfo () {
@@ -60,25 +71,51 @@ class preloader extends Phaser.State {
         };
         this.loadingText = this.game.add.text(0, 0, '', loadingStyle);
         this.loadingText.anchor.set(.5);
-        this.loadingText.setShadow(2, 2, '#0C1829');
-        this.loadingText.position.set(config.HALF_GAME_WIDTH, config.HALF_GAME_HEIGHT + this.outerPreloaderSprite.height);
-        this.game.time.events.add(1, () => {
+        this.loadingText.setShadow(4, 4, '#999');
+        this.loadingText.position.set(config.HALF_GAME_WIDTH, config.HALF_GAME_HEIGHT + this.outerPreloaderSprite.height + 10);
+        this.game.time.events.add(100, () => {
            this.loadingText.setText('loading...');
         });
     }
 
-    addCompanyInfo () {
+    loadUpdate () {
+        this.loadingText.setText(this.load.progress + '%');
+    }
 
+    addCompanyInfo () {
+        let info = '一站地网络科技\nwww.ezhandi.com , 2017';
+        let style = {
+          font: '26px Verdana',
+          fill: '#FFFFFF',
+          align: 'center'
+        };
+        this.copyright = this.game.add.text(0, 0, info, style);
+        this.copyright.lineSpacing = 10;
+        this.copyright.anchor.set(.5);
+        this.copyright.position.set(config.HALF_GAME_WIDTH, config.GAME_HEIGHT - this.copyright.height);
+        this.copyright.setShadow(2, 2, '#333');
+    }
+
+    initPicturesConfig () {
+        initGame.picturesConfig = new picturesConfig(this.game);
     }
 
     resizeBackground () {
-        let natureW = this.bg.width / this.bg.scale.x,
-            natureH = this.bg.height / this.bg.scale.y;
-        this.bg.scale.set(config.GAME_WIDTH / natureW, config.GAME_HEIGHT / natureH);
+        this.bg.width = config.GAME_WIDTH + 1;
+        this.bg.height = config.GAME_HEIGHT + 1;
+    }
+
+    resizeBgItem () {
+        this.item.position.set(config.HALF_GAME_WIDTH, config.HALF_GAME_HEIGHT);
     }
 
     resize () {
         this.resizeBackground();
+        this.resizeBgItem();
+    }
+
+    shutdown () {
+        this.cache.removeImage('preloader', !0);
     }
 }
 
