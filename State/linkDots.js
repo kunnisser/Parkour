@@ -45,8 +45,9 @@ class linkDots extends Phaser.State {
     addPlainPicture () {
         let index = this.world.getIndex(this.colorPic);
         this.plainPic = this.game.add.image(0, 0, this.getPlainTexture());
-        this.plainPic.position.set( -.5 * config.HALF_GAME_WIDTH, -.5 * config.HALF_GAME_HEIGHT);
+        this.plainPic.position.set(config.HALF_GAME_WIDTH - .5 * this.plainPic.width, config.HALF_GAME_HEIGHT -.5 * this.plainPic.height);
         this.game.world.addAt(this.plainPic, index);
+        this.colorPic.onLevelComplete();
     }
 
     // 获取单色纹理
@@ -65,6 +66,8 @@ class linkDots extends Phaser.State {
         }
         return plainTexture;
     }
+
+
 
     backgroundResize () {
         this.background.width = config.GAME_WIDTH + 1;
